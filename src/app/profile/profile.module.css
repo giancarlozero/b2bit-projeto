@@ -1,0 +1,13 @@
+.profilebg {
+  background-color: #f1f5f9;
+}
+
+.profilename, .profileemail {
+  background-color: #f4f4f4;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.profileavatar {
+  border-radius: 5px;
+}
