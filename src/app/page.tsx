@@ -13,25 +13,23 @@ import api from "./lib/axios";
 export default function Home() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("")
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+
     try {
       const response = await api.post("/auth/login/", {
         email,
         password,
       });
 
-      console.log("Token Access: ", response.data.tokens.access)
-      console.log("Dados de retorno da API: ", response.data)
-
       const accessToken = response.data.tokens.access;
       const refreshToken = response.data.tokens.refresh;
-      // const user = response.data.user;
 
       if(!accessToken) {
-        throw new Error("Token não encontrado.")
+        throw new Error("Token not found.")
       }
 
       localStorage.setItem("token", accessToken);
@@ -40,9 +38,14 @@ export default function Home() {
       }
 
       router.push("/profile");
-    } catch (error) {
-      console.error("Erro no login:", error);
-      alert("Credenciais inválidas");
+    } catch (error: any) {
+      console.error("Erro de login:", error);
+
+      if(error.response?.status === 401) {
+        setErrorMessage("Wrong e-mail or password. Please fix it and try again.")
+      } else {
+        setErrorMessage("Login error. Please try again.")
+      }
     }
   };
 
@@ -61,7 +64,7 @@ export default function Home() {
                 name="email"
                 placeholder="exemplo@email.com"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {setEmail(e.target.value); setErrorMessage("");}}
                 required
               />
               <Label htmlFor="password">Password</Label>
@@ -70,10 +73,13 @@ export default function Home() {
                 name="password"
                 placeholder="*****************"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {setPassword(e.target.value); setErrorMessage("");}}
                 required
               />
               <Button type="submit">Sign In</Button>
+              {errorMessage && (
+                <p className="text-red-600 text-sm-mt-2"><strong>{errorMessage}</strong></p>
+              )}
             </div>
           </form>
         </CardContent>
