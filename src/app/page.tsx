@@ -38,7 +38,7 @@ export default function Home() {
       }
 
       router.push("/profile");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Erro de login:", error);
 
       if(error.response?.status === 401) {
